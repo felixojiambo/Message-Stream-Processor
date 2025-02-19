@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: message-stream-processor-service
+  labels:
+    app: message-stream-processor
+spec:
+  selector:
+    app: message-stream-processor
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
