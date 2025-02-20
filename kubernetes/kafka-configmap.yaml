@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-config
+  labels:
+    app: message-stream-processor
+data:
+  application.properties: |-
+    # Application name used for identifying this microservice.
+    spring.application.name=message-stream-processor
+
+    # Kafka bootstrap servers (broker addresses).
+    # This can be overridden using the environment variable KAFKA_BOOTSTRAP_SERVERS.
+    spring.kafka.bootstrap-servers=${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+    # Kafka producer configurations:
+    # Key serializer to convert message keys into byte arrays.
+    spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer
+    # Value serializer to convert message values into byte arrays.
+    spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.StringSerializer
+
+    # Kafka consumer configurations:
+    # Consumer group ID for this service (all instances of this service will share the same group ID).
+    spring.kafka.consumer.group-id=group_id
+    # Start consuming from the beginning if no offset is found.
+    spring.kafka.consumer.auto-offset-reset=earliest
+    # Key deserializer to convert byte arrays into strings.
+    spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer
+    # Value deserializer to convert byte arrays into strings.
+    spring.kafka.consumer.value-deserializer=org.apache.kafka.common.serialization.StringDeserializer
