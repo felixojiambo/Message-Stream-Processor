@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-app-service # Name of the service that exposes the Spring Boot application within the cluster.
+  labels:
+    app: message-stream-processor # Label used to group this service with related resources.
+spec:
+  selector:
+    app: message-stream-processor # Targets pods with this label (from the Deployment) to route traffic to.
+  ports:
+    - protocol: TCP # Protocol for the service (TCP is typical for HTTP).
+      port: 80 # The port exposed by the service within the cluster (cluster-internal access).
+      targetPort: 8080 # The port on the pod/container where the Spring Boot app is listening.
+  type: ClusterIP # Service is accessible only within the cluster (default type).
