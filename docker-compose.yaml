@@ -1,31 +1,69 @@
+# docker-compose.yml
+
 services:
   zookeeper:
+    # Starts a Zookeeper container using Confluent Platform's image (version 7.5.0).
+    # Zookeeper is used for managing and coordinating Kafka brokers.
     image: confluentinc/cp-zookeeper:7.5.0
     environment:
+      # Port on which Zookeeper listens for client connections.
       ZOOKEEPER_CLIENT_PORT: 2181
+
+      # Basic time unit in milliseconds used by Zookeeper for heartbeats and session timeouts.
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "2181:2181"
+      - "2181:2181" # Maps port 2181 on the host to port 2181 in the container.
 
   kafka:
+    # Starts a Kafka broker container using Confluent Platform's image (version 7.5.0).
+    # Kafka relies on Zookeeper for broker coordination.
     image: confluentinc/cp-kafka:7.5.0
+
+    # Ensures Kafka service starts only after Zookeeper is up.
     depends_on:
       - zookeeper
+
     environment:
+      # Unique ID for the Kafka broker in the cluster.
       KAFKA_BROKER_ID: 1
+
+      # Specifies the Zookeeper connection string for Kafka to register itself.
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+      # Configures listener interfaces for Kafka broker.
+      # PLAINTEXT is for internal communication within the Docker network.
+      # PLAINTEXT_HOST is for external access from the host machine.
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
+
+      # Advertises listener addresses to Kafka clients.
+      # Internal containers connect via `kafka:9092`, and external clients connect via `localhost:29092`.
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+
+      # Maps listener names to security protocols.
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
+
+      # Defines the listener used for inter-broker communication.
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+      # Sets the replication factor for Kafka's internal topics like consumer offsets.
+      # Since this is a single broker setup, this is set to 1.
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
     ports:
-      - "9092:9092"
+      - "9092:9092"   # Maps Kafka internal port for internal Docker network communication.
+      - "29092:29092" # Maps Kafka external port for access from the host machine.
 
   message-stream-processor:
+    # Builds the application image from the current directory (Dockerfile should be present here).
     build: .
+
+    # Ensures message-stream-processor starts only after Kafka is up.
     depends_on:
       - kafka
+
     environment:
+      # Passes Kafka broker address to the Spring Boot application.
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
     ports:
-      - "8080:8080"
+      - "8080:8080" # Maps port 8080 in the container to port 8080 on the host.
