@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zookeeper-deployment # Name of the deployment for the Zookeeper service.
+  labels:
+    app: zookeeper # Label to identify this deployment and its resources.
+spec:
+  replicas: 1 # Deploys a single instance of Zookeeper (1 pod).
+  selector:
+    matchLabels:
+      app: zookeeper # Ensures this deployment manages pods with this label.
+  template:
+    metadata:
+      labels:
+        app: zookeeper # Labels assigned to the pods created by this deployment.
+    spec:
+      containers:
+        - name: zookeeper # Container name for Zookeeper.
+          image: confluentinc/cp-zookeeper:7.5.0 # Zookeeper image from Confluent Platform, version 7.5.0.
+          ports:
+            - containerPort: 2181 # Exposes Zookeeper's client port for internal communication.
+          env:
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: "2181"
+              # Port on which Zookeeper will listen for client connections.
+
+            - name: ZOOKEEPER_TICK_TIME
+              value: "2000"
+              # The time unit (in milliseconds) used by Zookeeper for heartbeats and timeouts.
