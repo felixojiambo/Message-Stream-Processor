@@ -1,14 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: message-stream-processor-service
+  name: message-stream-processor-service # Name of the service for accessing the application.
   labels:
-    app: message-stream-processor
+    app: message-stream-processor # Label used to identify this service.
 spec:
   selector:
-    app: message-stream-processor
+    app: message-stream-processor # This service will route traffic to pods with this label.
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
-  type: ClusterIP
+    - protocol: TCP # Protocol for the service (TCP for HTTP applications).
+      port: 80 # Exposes the service on port 80 within the cluster.
+      targetPort: 8080 # Forwards traffic to container port 8080 (where the application is running).
+      nodePort: 30080 # Optional: Exposes the service externally on port 30080 on each node.
+  type: NodePort # Exposes the service externally on each node's IP at a specific port (30080 in this case).
