@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper-service # Name of the service to expose Zookeeper within the cluster.
+  labels:
+    app: zookeeper # Label to identify this service for organizational and management purposes.
+spec:
+  selector:
+    app: zookeeper # Targets pods with this label (from the Deployment) to route traffic to.
+  ports:
+    - protocol: TCP # Protocol used for communication (TCP for Zookeeper client connections).
+      port: 2181 # Exposes this port within the cluster (for other services to connect).
+      targetPort: 2181 # Forwards traffic to the Zookeeper container’s port 2181.
+  type: ClusterIP # The default type; makes the service accessible only within the cluster.
