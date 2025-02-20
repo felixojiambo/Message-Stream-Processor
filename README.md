@@ -90,7 +90,7 @@ docker-compose up
 1. **Apply the ConfigMap:**
 
    ```bash
-   kubectl apply -f kubernetes/kafka-config.yaml
+   kubectl apply -f kubernetes/kafka-configmap.yaml
    ```
 
 2. **Deploy Zookeeper:**
