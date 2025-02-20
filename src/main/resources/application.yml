@@ -1,13 +1,32 @@
+# application.yaml
+
 spring:
   application:
-    name=message-stream-processor:
+    # Specifies the name of the application. This is used as an identifier within the Spring ecosystem.
+    name: message-stream-processor
+
   kafka:
+    # Specifies the Kafka broker addresses used to establish initial connections to the cluster.
+    # This can be overridden with an environment variable `KAFKA_BOOTSTRAP_SERVERS`.
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
     producer:
+      # Defines the key serializer class for Kafka producer. It converts the message key to a byte array.
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+      # Defines the value serializer class for Kafka producer. It converts the message value to a byte array.
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
     consumer:
+      # Specifies the consumer group ID that uniquely identifies the consumer group.
       group-id: group_id
+
+      # Determines what happens when there is no initial offset in Kafka or if the current offset does not exist.
+      # 'earliest' means that the consumer will start reading from the beginning of the topic.
       auto-offset-reset: earliest
+
+      # Defines the key deserializer class for Kafka consumer. It converts byte arrays back into strings.
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+      # Defines the value deserializer class for Kafka consumer. It converts byte arrays back into strings.
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
