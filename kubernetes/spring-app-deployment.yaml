@@ -16,14 +16,12 @@ spec:
     spec:
       containers:
         - name: message-stream-processor # Name of the container running the Spring Boot app.
-          image: message-stream-processor:latest # Docker image for the application.
+          image: ojiamboloc/message-stream-processor:latest # Updated Docker Hub image
           ports:
             - containerPort: 8080 # Exposes port 8080 in the container for HTTP traffic.
           env:
             - name: SPRING_CONFIG_LOCATION
               value: "classpath:/,file:/config/"
-              # This allows Spring Boot to read configuration files from /config directory in addition to classpath.
-              # The ConfigMap containing 'application.properties' will be mounted here.
           volumeMounts:
             - name: kafka-config-volume # Refers to the volume defined below.
               mountPath: /config # Mounts the volume to the /config directory inside the container.
