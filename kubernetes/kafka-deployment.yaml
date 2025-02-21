@@ -18,22 +18,27 @@ spec:
         - name: kafka
           image: confluentinc/cp-kafka:7.5.0 # Confluent Kafka Docker image version 7.5.0.
           ports:
-            - containerPort: 9092 # Kafka broker listens on port 9092.
+            - containerPort: 9092 # Internal Kafka broker communication.
+            - containerPort: 29092 # External Kafka access.
           env:
             - name: KAFKA_BROKER_ID
               value: "1" # Unique identifier for this Kafka broker.
+
             - name: KAFKA_ZOOKEEPER_CONNECT
-              value: zookeeper-service:2181 # Connects to the Zookeeper service running on port 2181.
+              value: "zookeeper-service:2181" # Connects to the Zookeeper service.
+
             - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
               value: "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
               # Defines the mapping of listener names to security protocols.
-              # PLAINTEXT is used for both internal and external communications.
+
+            - name: KAFKA_LISTENERS
+              value: "PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092"
+              # Internal clients connect via 9092, external clients use 29092.
 
             - name: KAFKA_ADVERTISED_LISTENERS
-              value: "PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092"
-              # Specifies the listener addresses to advertise to clients.
-              # Internal cluster clients use 'PLAINTEXT://kafka:9092'.
-              # External clients use 'PLAINTEXT_HOST://localhost:9092'.
+              value: "PLAINTEXT://kafka-service:9092,PLAINTEXT_HOST://localhost:29092"
+              # Internal cluster clients use 'PLAINTEXT://kafka-service:9092'.
+              # External clients use 'PLAINTEXT_HOST://localhost:29092'.
 
             - name: KAFKA_INTER_BROKER_LISTENER_NAME
               value: "PLAINTEXT"
@@ -41,5 +46,4 @@ spec:
 
             - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
               value: "1"
-              # Number of replicas for the internal Kafka offsets topic.
-              # Set to 1 because this is a single-node Kafka setup.
+              # Number of replicas for the Kafka offsets topic (single-node setup).
